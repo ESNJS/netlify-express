@@ -52,7 +52,7 @@ const contract = new Contract(
     '0x9FaE2529863bD691B4A7171bDfCf33C7ebB10a65'
 )
 
-app.get('/',  (req, res) => {
+router.get('/',  (req, res) => {
     res.send(
         "<h1>How to use this API</h1>"+
         "Use <b>/total</b> to get Total Supply of SOY.<br/>"+
@@ -61,7 +61,7 @@ app.get('/',  (req, res) => {
     )
 });
 
-app.get('/circulating',  (req, res) => {
+router.get('/circulating',  (req, res) => {
     contract.methods.totalSupply().call((error, totalSupply) => {
         contract.methods.balanceOf("0xdEad000000000000000000000000000000000000").call((error, deadWalletBalance) => {
             contract.methods.balanceOf("0x67c20e815D9016CfE04e905A409D276BF1f52b67").call((error, treasuryBalance) => {
@@ -74,13 +74,13 @@ app.get('/circulating',  (req, res) => {
       })
 });
 
-app.get('/total',  (req, res) => {
+router.get('/total',  (req, res) => {
     contract.methods.totalSupply().call((error, totalSupply) => {
         res.send((parseInt(totalSupply)/10**18).toString())
     })
 });
 
-app.get('/burned',  (req, res) => {
+router.get('/burned',  (req, res) => {
     contract.methods.totalSupply().call((error, totalSupply) => {
         contract.methods.balanceOf("0xdEad000000000000000000000000000000000000").call((error, deadWalletBalance) => {
             res.send((parseInt(deadWalletBalance)/10**18).toString())

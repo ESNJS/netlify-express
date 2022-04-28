@@ -3,9 +3,14 @@ const express = require('express');
 const path = require('path');
 const serverless = require('serverless-http');
 const app = express();
-const Web3 = require('web3');
 const bodyParser = require('body-parser');
 
+const router = express.Router();
+
+const Web3 = require('web3');
+const providerRPC = {
+    mainnet: 'https://clo-geth.0xinfra.com/',
+}
 const web3 = new Web3(providerRPC.mainnet);
 
 const contract = new web3.eth.Contract(
@@ -49,42 +54,51 @@ const contract = new web3.eth.Contract(
     '0x9FaE2529863bD691B4A7171bDfCf33C7ebB10a65'
 )
 
-const router = express.Router();
-router.get('/',  (req, res) => {
-  res.send(
-      "<h1>How to use this API</h1>"+
-      "Use <b>/total</b> to get Total Supply of SOY.<br/>"+
-      "Use <b>/circulating</b> to get Circulating Supply of SOY.<br/>"+
-      "Use <b>/burned</b> to get Bruned Amount of SOY."
-  )
+var cors = require('cors');
+
+app.use(
+    cors({
+        credentials: true,
+        origin: true
+    })
+);
+app.options('*', cors());
+
+app.get('/',  (req, res) => {
+    res.send(
+        "<h1>How to use this API</h1>"+
+        "Use <b>/total</b> to get Total Supply of SOY.<br/>"+
+        "Use <b>/circulating</b> to get Circulating Supply of SOY.<br/>"+
+        "Use <b>/burned</b> to get Bruned Amount of SOY."
+    )
 });
 
-router.get('/circulating',  (req, res) => {
-  contract.methods.totalSupply().call((error, totalSupply) => {
-      contract.methods.balanceOf("0xdEad000000000000000000000000000000000000").call((error, deadWalletBalance) => {
-          contract.methods.balanceOf("0x67c20e815D9016CfE04e905A409D276BF1f52b67").call((error, treasuryBalance) => {
-              contract.methods.balanceOf("0xEbBDd505bA4E6CaD0C17ccd5cbd88CBA073Fe934").call((error, idoBalance) => {
-                  res.send(((parseInt(totalSupply) - parseInt(deadWalletBalance) - parseInt(treasuryBalance) - parseInt(idoBalance))/10**18).toString())
-              })
-          })
-      })
+app.get('/circulating',  (req, res) => {
+    contract.methods.totalSupply().call((error, totalSupply) => {
+        contract.methods.balanceOf("0xdEad000000000000000000000000000000000000").call((error, deadWalletBalance) => {
+            contract.methods.balanceOf("0x67c20e815D9016CfE04e905A409D276BF1f52b67").call((error, treasuryBalance) => {
+                contract.methods.balanceOf("0xEbBDd505bA4E6CaD0C17ccd5cbd88CBA073Fe934").call((error, idoBalance) => {
+                    res.send(((parseInt(totalSupply) - parseInt(deadWalletBalance) - parseInt(treasuryBalance) - parseInt(idoBalance))/10**18).toString())
+                })
+            })
+        })
 
+      })
+});
+
+app.get('/total',  (req, res) => {
+    contract.methods.totalSupply().call((error, totalSupply) => {
+        res.send((parseInt(totalSupply)/10**18).toString())
     })
 });
 
-router.get('/total',  (req, res) => {
-  contract.methods.totalSupply().call((error, totalSupply) => {
-      res.send((parseInt(totalSupply)/10**18).toString())
-  })
-});
+app.get('/burned',  (req, res) => {
+    contract.methods.totalSupply().call((error, totalSupply) => {
+        contract.methods.balanceOf("0xdEad000000000000000000000000000000000000").call((error, deadWalletBalance) => {
+            res.send((parseInt(deadWalletBalance)/10**18).toString())
+        })
 
-router.get('/burned',  (req, res) => {
-  contract.methods.totalSupply().call((error, totalSupply) => {
-      contract.methods.balanceOf("0xdEad000000000000000000000000000000000000").call((error, deadWalletBalance) => {
-          res.send((parseInt(deadWalletBalance)/10**18).toString())
       })
-
-    })
 });
 
 app.use(bodyParser.json());

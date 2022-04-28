@@ -92,8 +92,6 @@ router.get('/',  (req, res) => {
   )
 });
 
-router.get('/another', (req, res) => {console.log(req)});
-
 app.use(bodyParser.json());
 app.use('/.netlify/functions/server', router);  // path must route to lambda
 

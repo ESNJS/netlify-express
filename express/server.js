@@ -3,7 +3,51 @@ const express = require('express');
 const path = require('path');
 const serverless = require('serverless-http');
 const app = express();
+const Web3 = require('web3');
 const bodyParser = require('body-parser');
+
+const web3 = new Web3(providerRPC.mainnet);
+
+const contract = new web3.eth.Contract(
+    [
+        {
+            "type":"function",
+            "stateMutability":"view",
+            "outputs":
+                [
+                    {
+                        "type":"uint256",
+                        "name":"",
+                        "internalType":"uint256"
+                    }
+                ],
+            "name":"balanceOf",
+            "inputs":
+                [
+                    {
+                        "type":"address",
+                        "name":"account",
+                        "internalType":"address"
+                    }
+                ]
+        },
+        {
+            "type":"function",
+            "stateMutability":"view",
+            "outputs":
+                [
+                    {
+                        "type":"uint256",
+                        "name":"",
+                        "internalType":"uint256"
+                    }
+                ],
+            "name":"totalSupply",
+            "inputs":[]
+        }
+    ], 
+    '0x9FaE2529863bD691B4A7171bDfCf33C7ebB10a65'
+)
 
 const router = express.Router();
 router.get('/',  (req, res) => {

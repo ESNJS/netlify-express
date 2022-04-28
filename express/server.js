@@ -7,13 +7,11 @@ const bodyParser = require('body-parser');
 
 const router = express.Router();
 
-const Web3 = require('web3');
-const providerRPC = {
-    mainnet: 'https://clo-geth.0xinfra.com/',
-}
-const web3 = new Web3(providerRPC.mainnet);
+var Contract = require('web3-eth-contract');
+Contract.setProvider('https://clo-geth.0xinfra.com/');
 
-const contract = new web3.eth.Contract(
+
+const contract = new Contract(
     [
         {
             "type":"function",

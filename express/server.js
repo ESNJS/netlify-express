@@ -52,16 +52,6 @@ const contract = new Contract(
     '0x9FaE2529863bD691B4A7171bDfCf33C7ebB10a65'
 )
 
-var cors = require('cors');
-
-app.use(
-    cors({
-        credentials: true,
-        origin: true
-    })
-);
-app.options('*', cors());
-
 app.get('/',  (req, res) => {
     res.send(
         "<h1>How to use this API</h1>"+
